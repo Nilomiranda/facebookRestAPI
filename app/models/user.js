@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -21,6 +22,18 @@ const UserSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
+UserSchema.pre('save', async function hashPassword(next) {
+  if (!this.isModified('password')) next();
+
+  this.password = await bcrypt.hash(this.password, 8); // create a hashed pass
+});
+
+UserSchema.methods = {
+  compareHash(password) {
+    return bcrypt.compare(password, this.password);
+  },
+};
 
 mongoose.model('User', UserSchema);
 

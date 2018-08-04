@@ -30,4 +30,26 @@ module.exports = {
       return next(err);
     }
   },
+
+  async signin(req, res, next) {
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ email });
+
+      // checks if user is registered
+      if (!user) {
+        return res.status(400).json({ Error: 'Email not registered' });
+      }
+
+      // checks if password is correct
+      if (!await user.compareHash(password)) {
+        return res.status(400).json({ Error: 'Password incorrect' });
+      }
+
+      // if all checks pass, user is authenticated
+      return res.status(200).json(user);
+    } catch (err) {
+      return next(err);
+    }
+  }
 };
