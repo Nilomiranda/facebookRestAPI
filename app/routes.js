@@ -1,9 +1,10 @@
 const express = require('express');
+const requireDir = require('require-dir');
 
 const routes = express.Router();
 
-routes.get('/test', (req, res) => {
-  res.status(200).json({ Message: 'Successfully connnected' });
-});
+const controllers = requireDir('./controllers');
+
+routes.post('/signup', controllers.authController.signup);
 
 module.exports = routes;

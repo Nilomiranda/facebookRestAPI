@@ -1,11 +1,15 @@
 const app = require('express')();
-const routes = require('./app/routes');
+
 const mongoose = require('mongoose');
-const databaseConfig = require('./config/database');
 const requireDir = require('require-dir');
+const bodyParser = require('body-parser');
+const databaseConfig = require('./config/database');
+const routes = require('./app/routes');
 
 mongoose.connect(databaseConfig.url);
 requireDir(databaseConfig.modelsPath);
+
+app.use(bodyParser.json());
 
 app.use('/api', routes);
 
