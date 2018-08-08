@@ -15,7 +15,7 @@ module.exports = {
         });
       }
 
-      // check if email is already used by another account
+      // checks if email is already used by another account
       const checkedEmail = await User.findOne({ email });
       if (checkedEmail) {
         return res.status(400).json({
@@ -25,7 +25,10 @@ module.exports = {
 
       const newUser = await User.create(req.body);
 
-      return res.status(200).json(newUser);
+      return res.status(200).json({
+        newUser,
+        token: newUser.generateToken(),
+      });
     } catch (err) {
       return next(err);
     }
@@ -47,9 +50,12 @@ module.exports = {
       }
 
       // if all checks pass, user is authenticated
-      return res.status(200).json(user);
+      return res.status(200).json({
+        user,
+        token: user.generateToken(),
+      });
     } catch (err) {
       return next(err);
     }
-  }
+  },
 };
