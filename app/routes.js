@@ -19,6 +19,7 @@ routes.use(authMiddleware.auth); // use of the authentication middleware
  * authenticated
  */
 
-routes.post('/posts/new', controllers.postController.newPost);
+routes.post('/posts/new', controllers.postController.newPost); // creating a new post
+routes.delete('/posts/:postId/delete', controllers.postController.destroy); // delete a post
 
 module.exports = routes;

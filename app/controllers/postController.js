@@ -12,4 +12,16 @@ module.exports = {
       return next(err);
     }
   },
-}
+
+  async destroy(req, res, next) {
+    try {
+      const { postId: id } = req.params; // retrieves post id from URL
+
+      await Post.findByIdAndRemove(id); // find post by id and removes it
+
+      return res.status(200).json({ Message: 'Post deleted' });
+    } catch (err) {
+      return next(err);
+    }
+  }
+};
