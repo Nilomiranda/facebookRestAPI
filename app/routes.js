@@ -12,9 +12,13 @@ const authMiddleware = require('./middlewares/auth');
 routes.post('/signup', controllers.authController.signup);
 routes.get('/signin', controllers.authController.signin);
 
-routes.use(authMiddleware.auth);
+routes.use(authMiddleware.auth); // use of the authentication middleware
 
-routes.get('/test', (req, res) => res.send(req.userId));
+/**
+ * From this point, all the routes below will only work if the user is
+ * authenticated
+ */
 
+routes.post('/posts/new', controllers.postController.newPost);
 
 module.exports = routes;
