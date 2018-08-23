@@ -12,6 +12,9 @@ module.exports = {
       // looks for user in the database
       const returnedUser = await User.findById(userId);
 
+      // looking for the logged user in the database
+      const me = await User.findById(req.userId);
+
       /**
        * the error for not finding the user through and
        * invalid Id (mongoose nonaccepted format)
@@ -26,19 +29,35 @@ module.exports = {
         return res.status(400).json({ Error: 'User doesn\'t exist' });
       }
 
+      /**
+       * ROUTINE TO CHECK IF TARGET USER IS ALREADY A FRIEND
+       * BY THAT WE ASSUME THE USER WANTS TO BREAK THE
+       * FRIENDSHIP
+       */
+
+      if (returnedUser.friends.indexOf(req.userId) > -1) {
+        const myPosition = returnedUser.friends.indexOf(req.userId);
+        returnedUser.friends.splice(myPosition, 1); // removes friend from list
+        const myFriendsPosition = me.friends.indexOf(returnedUser.id);
+        me.friends.splice(myFriendsPosition, 1); // removes friend from list
+        returnedUser.save();
+        me.save();
+        return res.status(200).json({ Message: 'Friend removed' });
+      }
+
+      /**
+       * ======================================================================
+       */
+
       // adding the logged user to the target's friend list
       returnedUser.friends.push(req.userId);
-      console.log(returnedUser.friends);
-
-      // looking for the logged user in the database
-      const me = await User.findById(req.userId);
+      // saving the new data in the document
+      returnedUser.save();
 
       // saving the added user id to the logged user friend list (array)
       me.friends.push(returnedUser.id);
-      console.log(me.friends);
 
-      // saving the alterations in each document (updating user's data in database)
-      returnedUser.save();
+      // saving the alterations in thedocument
       me.save();
 
 
