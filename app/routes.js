@@ -19,7 +19,15 @@ routes.use(authMiddleware.auth); // use of the authentication middleware
  * authenticated
  */
 
+/**
+ * Routes related to posting
+ */
 routes.post('/posts/new', controllers.postController.newPost); // creating a new post
 routes.delete('/posts/:postId/delete', controllers.postController.destroy); // delete a post
+
+/**
+ * Routes related to friendship between users
+ */
+routes.post('/users/add/:userId', controllers.userController.addFriend); // adding a new friend
 
 module.exports = routes;
