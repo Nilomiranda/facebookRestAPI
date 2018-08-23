@@ -24,6 +24,7 @@ routes.use(authMiddleware.auth); // use of the authentication middleware
  */
 routes.post('/posts/new', controllers.postController.newPost); // creating a new post
 routes.delete('/posts/:postId/delete', controllers.postController.destroy); // delete a post
+routes.post('/posts/:postId/comment', controllers.postController.addComment); // adding comments
 
 /**
  * Routes related to friendship between users

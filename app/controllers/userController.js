@@ -38,10 +38,14 @@ module.exports = {
       if (returnedUser.friends.indexOf(req.userId) > -1) {
         const myPosition = returnedUser.friends.indexOf(req.userId);
         returnedUser.friends.splice(myPosition, 1); // removes friend from list
+
         const myFriendsPosition = me.friends.indexOf(returnedUser.id);
         me.friends.splice(myFriendsPosition, 1); // removes friend from list
+
+        // saving the alterations
         returnedUser.save();
         me.save();
+
         return res.status(200).json({ Message: 'Friend removed' });
       }
 
