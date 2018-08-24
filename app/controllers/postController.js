@@ -21,14 +21,13 @@ module.exports = {
 
       // throws an error if no post is found
       if (!postId) {
-        return res.status(400).json({ Error: 'Post not found' })
+        return res.status(400).json({ Error: 'Post not found' });
       }
 
       // looks for post in database
       const post = await Post.findById(postId);
 
       const newComment = await Comment.create({ ...req.body, userId: req.userId });
-      console.log(post);
       post.comments.push(newComment);
       post.save();
 
@@ -44,7 +43,16 @@ module.exports = {
   async destroy(req, res, next) {
     try {
       const { postId: id } = req.params; // retrieves post id from URL
+      const ownerId = req.userId; // gets the ID of the logged user
+      const post = Post.findById(id);
 
+      // checks if post is owned by the logged user
+      if (post.userId !== ownerId) {
+        // if not, doesn't allow to delete it
+        return res.status(401).json({ Error: 'User can\'t delete post' });
+      }
+
+      // if so, proceeds with the exclusion
       await Post.findByIdAndRemove(id); // find post by id and removes it
 
       return res.status(200).json({ Message: 'Post deleted' });
