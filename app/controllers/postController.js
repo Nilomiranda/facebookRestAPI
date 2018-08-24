@@ -67,8 +67,6 @@ module.exports = {
       const ownerId = req.userId;
       const comment = await Comment.findById(commentId);
 
-      console.log(comment.userId, ownerId);
-
       // checks if logged user is the owner of the comment
       if (comment.userId.toString() !== ownerId) {
         // if it's not the logged user's comment, doesn't allow to delete
@@ -83,4 +81,41 @@ module.exports = {
       return next(err);
     }
   },
+
+  async likes(req, res, next) {
+    try {
+      const { postId } = req.params;
+
+      const post = await Post.findById(postId); // looks for post in database
+
+      // check if post exists
+      if (!post) {
+        // if not, throws an error
+        return res.status(400).json({ Error: 'Post not found' });
+      }
+
+      // checks if post has a like from the logged user (the one who's giving the like)
+      if (post.likes.indexOf(req.userId) > -1) {
+        /**
+         * if the above condition is met, then we remove the like
+         * because it's assumed that the user wants to dislike the post
+         */
+        const position = post.likes.indexOf(req.userId); // find user id position
+        post.likes.splice(position, 1); // removes like
+        post.save();
+
+        return res.status(200).json({ Message: 'Post disliked' });
+      }
+
+      post.likes.push(req.userId); // likes post with the logged user
+      post.save();
+
+      return res.status(200).json({ Message: 'Post liked' });
+    } catch (err) {
+      if (err instanceof mongoose.CastError) {
+        return res.status(400).json({ Error: 'Invalid post id' });
+      }
+      return next(err);
+    }
+  }
 };

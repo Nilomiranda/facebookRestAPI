@@ -26,6 +26,7 @@ routes.post('/posts/new', controllers.postController.newPost); // creating a new
 routes.delete('/posts/:postId/delete', controllers.postController.destroy); // delete a post
 routes.post('/posts/:postId/comment', controllers.postController.addComment); // adding comments
 routes.delete('/posts/:postId/comment/:commentId/remove', controllers.postController.removeComment); // removing comments
+routes.post('/posts/:postId', controllers.postController.likes); // liking a post
 
 /**
  * Routes related to friendship between users
