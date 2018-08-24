@@ -15,6 +15,27 @@ module.exports = {
     }
   },
 
+  async destroy(req, res, next) {
+    try {
+      const { postId: id } = req.params; // retrieves post id from URL
+      const ownerId = req.userId; // gets the ID of the logged user
+      const post = Post.findById(id);
+
+      // checks if post is owned by the logged user
+      if (post.userId !== ownerId) {
+        // if not, doesn't allow to delete it
+        return res.status(401).json({ Error: 'User can\'t delete post' });
+      }
+
+      // if so, proceeds with the exclusion
+      await Post.findByIdAndRemove(id); // find post by id and removes it
+
+      return res.status(200).json({ Message: 'Post deleted' });
+    } catch (err) {
+      return next(err);
+    }
+  },
+
   async addComment(req, res, next) {
     try {
       const { postId } = req.params;
@@ -40,22 +61,24 @@ module.exports = {
     }
   },
 
-  async destroy(req, res, next) {
+  async removeComment(req, res, next) {
     try {
-      const { postId: id } = req.params; // retrieves post id from URL
-      const ownerId = req.userId; // gets the ID of the logged user
-      const post = Post.findById(id);
+      const { commentId } = req.params;
+      const ownerId = req.userId;
+      const comment = await Comment.findById(commentId);
 
-      // checks if post is owned by the logged user
-      if (post.userId !== ownerId) {
-        // if not, doesn't allow to delete it
-        return res.status(401).json({ Error: 'User can\'t delete post' });
+      console.log(comment.userId, ownerId);
+
+      // checks if logged user is the owner of the comment
+      if (comment.userId.toString() !== ownerId) {
+        // if it's not the logged user's comment, doesn't allow to delete
+        return res.status(401).json({ Error: 'Unable to delete comment' });
       }
 
-      // if so, proceeds with the exclusion
-      await Post.findByIdAndRemove(id); // find post by id and removes it
+      // if it is the logged user's comment, proceeds to delete
+      await Comment.findByIdAndRemove(commentId);
 
-      return res.status(200).json({ Message: 'Post deleted' });
+      return res.status(200).json({ Error: 'Comment removed' });
     } catch (err) {
       return next(err);
     }
