@@ -6,8 +6,10 @@ const bodyParser = require('body-parser');
 const databaseConfig = require('./config/database');
 const routes = require('./app/routes');
 
+
 mongoose.connect(databaseConfig.url);
 requireDir(databaseConfig.modelsPath);
+
 
 app.use(bodyParser.json());
 

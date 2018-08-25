@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const userSchema = require('../models/user');
+const sendMail = require('../../services/mailer');
 
 const User = mongoose.model('User', userSchema);
 
@@ -24,6 +25,18 @@ module.exports = {
       }
 
       const newUser = await User.create(req.body);
+
+      const welcomeMail = {
+        from: 'Facebook <nilomiranda3@gmail.com>',
+        to: email,
+        subject: `Welcome to Facebook ${name}`,
+        template: 'welcome',
+        context: {
+          name,
+        },
+      };
+
+      sendMail(welcomeMail);
 
       return res.status(200).json({
         newUser,
